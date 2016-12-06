@@ -13,7 +13,7 @@ Parameter       | Explanation
 ----------------|------------
 `profile`       | The name of the network profile (not neccessarely the same as SSID)
 `flags`         | Flags to pass to `WlanSetProfileEapXmlUserData()` function call (decimal number: 0=Current User, 1=All Users)
-`user data URI` | User data XML URI. Can be a path to an XML file, web URL where user data XML can be loaded from, etc.
+`user data URI` | User data XML URI. Can be a path to an XML file, web URL where user data XML can be loaded from, etc. The XML schema varies according to the configured EAP method provider used by `profile`. For example: Microsoft's EAP-TLS requires the schema described in [EAP-TLS User Properties](https://msdn.microsoft.com/en-us/library/windows/desktop/bb204662.aspx).
 
 ##Return codes
 Value | Meaning
