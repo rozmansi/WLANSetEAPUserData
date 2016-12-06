@@ -7,8 +7,6 @@ Binary downloads and change-logs can be found on the [project's release page](ht
 ```
 WLANSetEAPUserData <profile> <flags> <user data URI>
 ```
-
-##Parameters
 Parameter       | Explanation
 ----------------|------------
 `profile`       | The name of the network profile (not neccessarely the same as SSID)
