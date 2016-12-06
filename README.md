@@ -20,7 +20,7 @@ Value | Meaning
   100 | CommandLineToArgvW() failed
   101 | Not enough arguments
   200 | CoInitialize() failed
-  300 | CoCreateInstance(CLSID_DOMDocument2)
+  300 | CoCreateInstance(CLSID_DOMDocument2) failed
   301 | IXMLDOMDocument::load() failed
   302 | IXMLDOMDocument::load() reported an error in the XML document
   304 | IXMLDOMDocument::get_xml() failed
