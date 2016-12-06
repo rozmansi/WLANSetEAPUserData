@@ -1,2 +1,30 @@
 # WLANSetEAPUserData
-Windows helper utility to set user data for a given WLAN connection
+Windows helper utility to set user data for a given WLAN profile
+
+##Usage
+```
+WLANSetEAPUserData <profile> <flags> <user data URI>
+```
+
+##Parameters
+Parameter       | Explanation
+----------------|------------
+`profile`       | The name of the network profile (not neccessarely the same as SSID)
+`flags`         | Flags to pass to `WlanSetProfileEapXmlUserData()` function call (decimal number: 0=Current User, 1=All Users)
+`user data URI` | User data XML URI. Can be a path to an XML file, web URL where user data XML can be loaded from, etc.
+
+##Return codes
+Value | Meaning
+------|--------
+    0 | Success (on at least one WLAN interface)
+  100 | CommandLineToArgvW() failed
+  101 | Not enough arguments
+  200 | CoInitialize() failed
+  300 | CoCreateInstance(CLSID_DOMDocument2)
+  301 | IXMLDOMDocument::load() failed
+  302 | IXMLDOMDocument::load() reported an error in the XML document
+  304 | IXMLDOMDocument::get_xml() failed
+  400 | WlanOpenHandle() failed
+  401 | WlanEnumInterfaces() failed
+  402 | WlanSetProfileEapXmlUserData() failed on all WLAN interfaces for the given profile
+  403 | No ready WLAN interfaces found
