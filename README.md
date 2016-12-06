@@ -1,6 +1,8 @@
 # WLANSetEAPUserData
 Windows helper utility to set user data for a given WLAN profile
 
+Binary downloads and change-logs can be found on the [project's release page](https://github.com/rozmansi/WLANSetEAPUserData/releases).
+
 ##Usage
 ```
 WLANSetEAPUserData <profile> <flags> <user data URI>
