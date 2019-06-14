@@ -49,7 +49,7 @@ struct LocalFree_delete<_Ty[]>
     ///
     /// Frees memory
     ///
-    inline void operator()(_Ty *_Ptr) const
+    inline void operator()(_Frees_ptr_opt_ _Ty *_Ptr) const noexcept
     {
         LocalFree(_Ptr);
     }
@@ -80,7 +80,7 @@ public:
     ///
     /// \sa [CoInitialize function](https://msdn.microsoft.com/en-us/library/windows/desktop/ms678543.aspx)
     ///
-    inline com_initializer(_In_opt_ LPVOID pvReserved)
+    inline com_initializer(_In_opt_ LPVOID pvReserved) noexcept
     {
         m_result = CoInitialize(pvReserved);
     }
@@ -91,7 +91,7 @@ public:
     ///
     /// \sa [CoInitializeEx function](https://msdn.microsoft.com/en-us/library/windows/desktop/ms695279.aspx)
     ///
-    inline com_initializer(_In_opt_ LPVOID pvReserved, _In_ DWORD dwCoInit)
+    inline com_initializer(_In_opt_ LPVOID pvReserved, _In_ DWORD dwCoInit) noexcept
     {
         m_result = CoInitializeEx(pvReserved, dwCoInit);
     }
@@ -114,7 +114,7 @@ public:
     ///
     /// \sa [CoInitialize function](https://msdn.microsoft.com/en-us/library/windows/desktop/ms678543.aspx)
     ///
-    inline HRESULT status() const
+    inline HRESULT status() const noexcept
     {
         return m_result;
     }
@@ -136,7 +136,7 @@ struct WlanCloseHandle_delete
     ///
     /// \sa [WlanCloseHandle function](https://msdn.microsoft.com/en-us/library/windows/desktop/ms706610.aspx)
     ///
-    inline void operator()(void *_Ptr) const
+    inline void operator()(void *_Ptr) const noexcept
     {
         WlanCloseHandle(_Ptr, NULL);
     }
@@ -154,7 +154,7 @@ struct WlanFreeMemory_delete
     ///
     /// \sa [WlanFreeMemory function](https://msdn.microsoft.com/en-us/library/windows/desktop/ms706722.aspx)
     ///
-    void operator()(_Ty *_Ptr) const
+    void operator()(_Ty *_Ptr) const noexcept
     {
         WlanFreeMemory(_Ptr);
     }
