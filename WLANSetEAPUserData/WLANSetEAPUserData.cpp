@@ -52,103 +52,125 @@ int CALLBACK WinMain(
     UNREFERENCED_PARAMETER(lpCmdLine    );
     UNREFERENCED_PARAMETER(nCmdShow     );
 
-    // Get command line arguments. (As Unicode, please.)
-    int nArgs;
-    unique_ptr<LPWSTR[], LocalFree_delete<LPWSTR[]> > pwcArglist(CommandLineToArgvW(GetCommandLineW(), &nArgs));
-    if (!pwcArglist) {
-        //_ftprintf(stderr, _T("CommandLineToArgvW() failed (error %u).\n"), GetLastError());
-        return 100;
-    }
-    if (nArgs <= 3) {
-        //_ftprintf(stderr, _T("Not enough arguments.\n"));
-        return 101;
-    }
+    int result = -1;
+    bool interactive = false;
 
-    // Initialize COM.
-    com_initializer com_init(NULL);
-    if (FAILED(com_init.status())) {
-        //_ftprintf(stderr, _T("CoInitialize() failed (error 0x%08x).\n"), com_init.status());
-        return 200;
-    }
-
-    // Load user data XML into memory.
-    // Use MSXML6 IXMLDOMDocument to load XML to offload charset detection.
-    _bstr_t user_data;
-    {
-        // Create XML document.
-        _com_ptr_t<_com_IIID<IXMLDOMDocument, &__uuidof(IXMLDOMDocument)> > doc;
-        HRESULT hr = doc.CreateInstance(CLSID_DOMDocument60, NULL, CLSCTX_ALL);
-        if (FAILED(hr)) {
-            //_ftprintf(stderr, _T("CoCreateInstance(CLSID_DOMDocument2) failed (error 0x%08x).\n"), hr);
-            return 300;
+    try {
+        // Get command line arguments. (As Unicode, please.)
+        int nArgs;
+        unique_ptr<LPWSTR[], LocalFree_delete<LPWSTR[]> > pwcArglist(CommandLineToArgvW(GetCommandLineW(), &nArgs));
+        if (!pwcArglist) {
+            result = 100;
+            throw win_runtime_error("CommandLineToArgvW() failed");
         }
-        doc->put_async(VARIANT_FALSE);
-        doc->put_validateOnParse(VARIANT_FALSE);
-
-        // Load XML from user data file.
-        VARIANT_BOOL succeeded = VARIANT_FALSE;
-        hr = doc->load(_variant_t(pwcArglist[3]), &succeeded);
-        if (FAILED(hr)) {
-            //_ftprintf(stderr, _T("IXMLDOMDocument::load(%ls) failed (error 0x%08x).\n"), pwcArglist[3], hr);
-            return 301;
-        } else if (!succeeded) {
-            //_ftprintf(stderr, _T("IXMLDOMDocument::load(%ls) failed.\n"), pwcArglist[3]);
-            return 302;
+        if (nArgs < 4) {
+            result = 101;
+            throw invalid_argument("Not enough arguments.");
         }
 
-        // Get document XML.
-        BSTR bstr;
-        hr = doc->get_xml(&bstr);
-        if (FAILED(hr)) {
-            //_ftprintf(stderr, _T("IXMLDOMDocument::get_xml() failed (error 0x%08x).\n"), hr);
-            return 304;
-        }
-        user_data.Attach(bstr);
-    }
+        for (int i = 4; i < nArgs; i++)
+            if (_wcsicmp(pwcArglist[i], L"/I") == 0) interactive = true;
 
-    // Open WLAN handle.
-    DWORD dwNegotiatedVersion;
-    wlan_handle wlan;
-    if (!wlan.open(WLAN_API_MAKE_VERSION(2, 0), &dwNegotiatedVersion)) {
-        //_ftprintf(stderr, _T("WlanOpenHandle() failed (error %u).\n"), GetLastError());
-        return 400;
-    }
-
-    // Get a list of WLAN interfaces.
-    unique_ptr<WLAN_INTERFACE_INFO_LIST, WlanFreeMemory_delete<WLAN_INTERFACE_INFO_LIST> > interfaces;
-    {
-        WLAN_INTERFACE_INFO_LIST *pInterfaceList;
-        DWORD dwResult = WlanEnumInterfaces(wlan, NULL, &pInterfaceList);
-        if (dwResult != ERROR_SUCCESS) {
-            //_ftprintf(stderr, _T("WlanEnumInterfaces() failed (error %u).\n"), dwResult);
-            return 401;
-        }
-        interfaces.reset(pInterfaceList);
-    }
-
-    // Iterate over all WLAN interfaces.
-    bool success = false;
-    for (DWORD i = 0; i < interfaces->dwNumberOfItems; i++) {
-        if (interfaces->InterfaceInfo[i].isState == wlan_interface_state_not_ready) {
-            // This interface is not ready.
-            continue;
+        // Initialize COM.
+        com_initializer com_init(NULL);
+        if (FAILED(com_init.status())) {
+            result = 200;
+            throw com_runtime_error(com_init.status(), "CoInitialize() failed");
         }
 
-        // Set user data.
-        DWORD dwResult = WlanSetProfileEapXmlUserData(
-            wlan,
-            &(interfaces->InterfaceInfo[i].InterfaceGuid),
-            pwcArglist[1],
-            wcstoul(pwcArglist[2], NULL, 10),
-            user_data,
-            NULL);
-        if (dwResult == ERROR_SUCCESS) {
-            // At least one interface/profile succeeded.
-            success = true;
-        } else {
-            //_ftprintf(stderr, _T("WlanSetProfileEapXmlUserData() failed (error %u).\n"), dwResult);
+        // Load user data XML into memory.
+        // Use MSXML6 IXMLDOMDocument to load XML to offload charset detection.
+        _bstr_t user_data;
+        {
+            // Create XML document.
+            _com_ptr_t<_com_IIID<IXMLDOMDocument, &__uuidof(IXMLDOMDocument)> > doc;
+            HRESULT hr = doc.CreateInstance(CLSID_DOMDocument60, NULL, CLSCTX_ALL);
+            if (FAILED(hr)) {
+                result = 300;
+                throw com_runtime_error(hr, "CoCreateInstance(CLSID_DOMDocument2) failed");
+            }
+            doc->put_async(VARIANT_FALSE);
+            doc->put_validateOnParse(VARIANT_FALSE);
+
+            // Load XML from user data file.
+            VARIANT_BOOL succeeded = VARIANT_FALSE;
+            hr = doc->load(_variant_t(pwcArglist[3]), &succeeded);
+            if (FAILED(hr)) {
+                result = 301;
+                throw com_runtime_error(hr, string_printf("IXMLDOMDocument::load(%ls) failed", pwcArglist[3]));
+            } else if (!succeeded) {
+                result = 302;
+                throw runtime_error(string_printf("IXMLDOMDocument::load(%ls) failed", pwcArglist[3]));
+            }
+
+            // Get document XML.
+            BSTR bstr;
+            hr = doc->get_xml(&bstr);
+            if (FAILED(hr)) {
+                result = 304;
+                throw com_runtime_error(hr, "IXMLDOMDocument::get_xml() failed");
+            }
+            user_data.Attach(bstr);
         }
+
+        // Open WLAN handle.
+        DWORD dwNegotiatedVersion;
+        wlan_handle wlan;
+        if (!wlan.open(WLAN_API_MAKE_VERSION(2, 0), &dwNegotiatedVersion)) {
+            result = 400;
+            throw win_runtime_error("WlanOpenHandle() failed");
+        }
+
+        // Get a list of WLAN interfaces.
+        unique_ptr<WLAN_INTERFACE_INFO_LIST, WlanFreeMemory_delete<WLAN_INTERFACE_INFO_LIST> > interfaces;
+        {
+            WLAN_INTERFACE_INFO_LIST *pInterfaceList;
+            DWORD dwResult = WlanEnumInterfaces(wlan, NULL, &pInterfaceList);
+            if (dwResult != ERROR_SUCCESS) {
+                result = 401;
+                throw win_runtime_error(dwResult, "WlanEnumInterfaces() failed");
+            }
+            interfaces.reset(pInterfaceList);
+        }
+        if (!interfaces->dwNumberOfItems) {
+            result = 403;
+            throw runtime_error("No ready WLAN interfaces found");
+        }
+
+        // Iterate over all WLAN interfaces.
+        bool success = false;
+        for (DWORD i = 0; i < interfaces->dwNumberOfItems; i++) {
+            if (interfaces->InterfaceInfo[i].isState == wlan_interface_state_not_ready) {
+                // This interface is not ready.
+                continue;
+            }
+
+            // Set user data.
+            DWORD dwResult = WlanSetProfileEapXmlUserData(
+                wlan,
+                &(interfaces->InterfaceInfo[i].InterfaceGuid),
+                pwcArglist[1],
+                wcstoul(pwcArglist[2], NULL, 10),
+                user_data,
+                NULL);
+            if (dwResult == ERROR_SUCCESS) {
+                // At least one interface/profile succeeded.
+                success = true;
+            } else if (interactive)
+                MessageBox(NULL, tstring_printf(_T("WlanSetProfileEapXmlUserData() failed: %s"), win_runtime_error(dwResult).msg().c_str()).c_str(), NULL, MB_ICONWARNING | MB_OK);
+        }
+
+        return success ? 0 : 402;
+    } catch (com_runtime_error err) {
+        if (interactive)
+            MessageBox(NULL, tstring_printf(_T("%hs: 0x%08x"), err.what(), err.number()).c_str(), NULL, MB_ICONERROR | MB_OK);
+    } catch (win_runtime_error err) {
+        if (interactive)
+            MessageBox(NULL, tstring_printf(_T("%hs: %s"), err.what(), err.msg().c_str()).c_str(), NULL, MB_ICONERROR | MB_OK);
+    } catch (exception err) {
+        if (interactive)
+            MessageBoxA(NULL, err.what(), NULL, MB_ICONERROR | MB_OK);
     }
 
-    return success ? 0 : interfaces->dwNumberOfItems ? 402 : 403;
+    return result;
 }
