@@ -1,7 +1,3 @@
-/*.sdf
-/*.suo
-/Debug
-/ipch
-/Release
+/.vs
+/Win32
 /x64
-/*.opensdf

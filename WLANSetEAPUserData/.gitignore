@@ -1,5 +1,4 @@
 /*.user
-/Debug
-/Release
+/Win32
 /x64
-/*.aps
+/WLANSetEAPUserData.aps
