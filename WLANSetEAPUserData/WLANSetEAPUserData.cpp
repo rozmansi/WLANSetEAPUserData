@@ -17,7 +17,9 @@
     along with WLANSetEAPUserData. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "WLANSetEAPUserData.h"
+#include <WinStd\Com.h>
+#include <WinStd\Common.h>
+#include <WinStd\WLAN.h>
 #include <comip.h>
 #include <comutil.h>
 #include <msxml6.h>
@@ -33,6 +35,7 @@
 #pragma comment(lib, "Wlanapi.lib")
 
 using namespace std;
+using namespace winstd;
 
 
 ///
@@ -105,22 +108,17 @@ int CALLBACK WinMain(
 
     // Open WLAN handle.
     DWORD dwNegotiatedVersion;
-    unique_ptr<void, WlanCloseHandle_delete> wlan;
-    {
-        HANDLE hWlan;
-        DWORD dwResult = WlanOpenHandle(WLAN_API_MAKE_VERSION(2, 0), NULL, &dwNegotiatedVersion, &hWlan);
-        if (dwResult != ERROR_SUCCESS) {
-            //_ftprintf(stderr, _T("WlanOpenHandle() failed (error %u).\n"), dwResult);
-            return 400;
-        }
-        wlan.reset(hWlan);
+    wlan_handle wlan;
+    if (!wlan.open(WLAN_API_MAKE_VERSION(2, 0), &dwNegotiatedVersion)) {
+        //_ftprintf(stderr, _T("WlanOpenHandle() failed (error %u).\n"), GetLastError());
+        return 400;
     }
 
     // Get a list of WLAN interfaces.
     unique_ptr<WLAN_INTERFACE_INFO_LIST, WlanFreeMemory_delete<WLAN_INTERFACE_INFO_LIST> > interfaces;
     {
         WLAN_INTERFACE_INFO_LIST *pInterfaceList;
-        DWORD dwResult = WlanEnumInterfaces(wlan.get(), NULL, &pInterfaceList);
+        DWORD dwResult = WlanEnumInterfaces(wlan, NULL, &pInterfaceList);
         if (dwResult != ERROR_SUCCESS) {
             //_ftprintf(stderr, _T("WlanEnumInterfaces() failed (error %u).\n"), dwResult);
             return 401;
@@ -138,7 +136,7 @@ int CALLBACK WinMain(
 
         // Set user data.
         DWORD dwResult = WlanSetProfileEapXmlUserData(
-            wlan.get(),
+            wlan,
             &(interfaces->InterfaceInfo[i].InterfaceGuid),
             pwcArglist[1],
             wcstoul(pwcArglist[2], NULL, 10),

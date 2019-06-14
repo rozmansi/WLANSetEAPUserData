@@ -10,6 +10,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{943F6F19-535F-4DD8-A5BA-5033B4E2EFF5}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinStd", "lib\WinStd\build\WinStd-16.0.vcxproj", "{47399D91-7EB9-41DE-B521-514BA5DB0C43}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM64 = Debug|ARM64
@@ -32,8 +36,26 @@ Global
 		{EC3084A5-CA18-498B-A962-5321AE37789B}.Release|Win32.Build.0 = Release|Win32
 		{EC3084A5-CA18-498B-A962-5321AE37789B}.Release|x64.ActiveCfg = Release|x64
 		{EC3084A5-CA18-498B-A962-5321AE37789B}.Release|x64.Build.0 = Release|x64
+		{47399D91-7EB9-41DE-B521-514BA5DB0C43}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{47399D91-7EB9-41DE-B521-514BA5DB0C43}.Debug|ARM64.Build.0 = Debug|ARM64
+		{47399D91-7EB9-41DE-B521-514BA5DB0C43}.Debug|Win32.ActiveCfg = Debug|Win32
+		{47399D91-7EB9-41DE-B521-514BA5DB0C43}.Debug|Win32.Build.0 = Debug|Win32
+		{47399D91-7EB9-41DE-B521-514BA5DB0C43}.Debug|x64.ActiveCfg = Debug|x64
+		{47399D91-7EB9-41DE-B521-514BA5DB0C43}.Debug|x64.Build.0 = Debug|x64
+		{47399D91-7EB9-41DE-B521-514BA5DB0C43}.Release|ARM64.ActiveCfg = Release|ARM64
+		{47399D91-7EB9-41DE-B521-514BA5DB0C43}.Release|ARM64.Build.0 = Release|ARM64
+		{47399D91-7EB9-41DE-B521-514BA5DB0C43}.Release|Win32.ActiveCfg = Release|Win32
+		{47399D91-7EB9-41DE-B521-514BA5DB0C43}.Release|Win32.Build.0 = Release|Win32
+		{47399D91-7EB9-41DE-B521-514BA5DB0C43}.Release|x64.ActiveCfg = Release|x64
+		{47399D91-7EB9-41DE-B521-514BA5DB0C43}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{47399D91-7EB9-41DE-B521-514BA5DB0C43} = {943F6F19-535F-4DD8-A5BA-5033B4E2EFF5}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1B6BEEAC-F963-4C30-A460-9EE887768FC3}
 	EndGlobalSection
 EndGlobal
