@@ -1,5 +1,5 @@
 /*
-    Copyright 2016 Simon Rozman
+    Copyright 2016-2019 Simon Rozman
 
     This file is part of WLANSetEAPUserData.
 
