@@ -33,10 +33,10 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="..\Examples\EAP-TLS Userdata.xml">
+    <Xml Include="..\Examples\Microsoft EAP-TLS Userdata.xml">
       <Filter>Examples</Filter>
     </Xml>
-    <Xml Include="..\Examples\EAP-TTLS Userdata.xml">
+    <Xml Include="..\Examples\Microsoft EAP-TTLS Userdata %28inner non-EAP%29.xml">
       <Filter>Examples</Filter>
     </Xml>
   </ItemGroup>

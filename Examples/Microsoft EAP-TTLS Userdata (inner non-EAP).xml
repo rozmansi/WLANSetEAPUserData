@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<EapHostUserCredentials xmlns="http://www.microsoft.com/provisioning/EapHostUserCredentials" 
+		xmlns:eapCommon="http://www.microsoft.com/provisioning/EapCommon" 
+		xmlns:baseEap="http://www.microsoft.com/provisioning/BaseEapMethodUserCredentials">
+	<EapMethod>
+		<eapCommon:Type>21</eapCommon:Type>
+		<eapCommon:AuthorId>311</eapCommon:AuthorId>
+	</EapMethod>
+	<Credentials xmlns="http://www.microsoft.com/provisioning/EapHostUserCredentials">
+		<EapTtls xmlns="http://www.microsoft.com/provisioning/EapTtlsUserPropertiesV1">
+			<Username>user03</Username>
+			<Password>user_0303</Password>
+		</EapTtls>
+	</Credentials>
+</EapHostUserCredentials>
